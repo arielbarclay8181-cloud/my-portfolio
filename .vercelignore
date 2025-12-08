@@ -1,0 +1,14 @@
+# Exclude entire frontend build artifacts
+frontend/node_modules
+frontend/build
+frontend/dist
+
+# Exclude backend dev tools (Hanya dibutuhkan saat development atau testing)
+backend/pytest
+backend/black
+backend/isort
+backend/flake8
+backend/mypy
+backend/tests
+backend/__pycache__
+.venv
