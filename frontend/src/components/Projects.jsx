@@ -1,6 +1,5 @@
-// fileName: Projects.jsx
 import React, { useState } from 'react';
-import { ExternalLink, Github, Code2, Palette, Video, Maximize2, X, Image as ImageIcon } from 'lucide-react'; 
+import { ExternalLink, Github, Code2, Palette, Video, Maximize2, X } from 'lucide-react'; 
 import { Card } from './ui/card';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';

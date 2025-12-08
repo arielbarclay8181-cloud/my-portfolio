@@ -3,8 +3,6 @@ import { Briefcase, GraduationCap, Calendar } from 'lucide-react';
 import { Card } from './ui/card';
 
 const Experience = ({ data }) => {
-  const workExperience = data.filter(item => item.type === 'work');
-  const education = data.filter(item => item.type === 'education');
 
   const ExperienceCard = ({ item, index }) => (
     <div className="relative pl-8 pb-12 group">
