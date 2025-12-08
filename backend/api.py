@@ -1,37 +1,49 @@
 from fastapi import FastAPI, APIRouter, HTTPException
-from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 import os
-import logging
+import sys # Digunakan untuk menghentikan program jika terjadi error fatal
+import uuid
+from datetime import datetime, timezone
 from pathlib import Path
 from pydantic import BaseModel, Field
 from typing import List
-import uuid
-from datetime import datetime, timezone
+
+# Import yang dibutuhkan untuk SQLAlchemy
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker, declarative_base
 from sqlalchemy import Column, String, DateTime, select, text
 
-# Load environment
-ROOT_DIR = Path(__file__).parent
-load_dotenv(ROOT_DIR / '.env')
+# 🚨 CATATAN PENTING:
+# 1. Hapus load_dotenv() karena Vercel menggunakan Environment Variables (EV) langsung.
+# 2. Hapus hardcoded key database. EV harus diatur di dashboard Vercel.
 
-# Neon Database URL (TANPA ?sslmode=require di akhir)
+# ----------------------------------------------------------------------
+# 🔑 1. Pengambilan dan Validasi Environment Variable
+# ----------------------------------------------------------------------
+
+# Ambil DATABASE_URL dari Environment Variables Vercel
 DATABASE_URL = os.environ.get("DATABASE_URL")
+
 if not DATABASE_URL:
-    DATABASE_URL = "postgresql://neondb_owner:npg_FtTON3g6EHiy@ep-lucky-dew-a40oe7qr-pooler.us-east-1.aws.neon.tech/neondb"
+    # Jika variabel tidak ditemukan, cetak pesan error fatal dan hentikan program
+    # Ini akan mencegah deployment berjalan dengan database yang salah/kosong
+    print("❌ FATAL ERROR: DATABASE_URL environment variable is missing!")
+    print("    Pastikan Anda telah mengatur 'DATABASE_URL' di Vercel Dashboard.")
+    sys.exit(1) # Hentikan proses
 
-print(f"🔗 Database URL: {DATABASE_URL[:60]}...")
+print(f"🔗 Database URL diambil. Panjang: {len(DATABASE_URL)} karakter.")
 
-# Convert to async URL
+# ----------------------------------------------------------------------
+# ⚙️ 2. Konfigurasi Database (SQLAlchemy)
+# ----------------------------------------------------------------------
+
+# Convert ke URL async yang dibutuhkan oleh asyncpg
 ASYNC_DB_URL = DATABASE_URL.replace("postgresql://", "postgresql+asyncpg://")
-
-print(f"🔗 Async URL: {ASYNC_DB_URL[:60]}...")
 
 # SQLAlchemy setup dengan SSL untuk Neon
 engine = create_async_engine(
     ASYNC_DB_URL, 
-    echo=True,
+    echo=False, # Ubah ke True jika Anda ingin melihat semua query SQL
     connect_args={
         "ssl": "require"  # Ini penting untuk Neon!
     }
@@ -40,15 +52,18 @@ engine = create_async_engine(
 AsyncSessionLocal = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 Base = declarative_base()
 
-# Database Model
+# ----------------------------------------------------------------------
+# 🧱 3. Database & Pydantic Models (Tidak diubah dari kode Anda)
+# ----------------------------------------------------------------------
+
+# Database Model - Status Check
 class StatusCheckDB(Base):
     __tablename__ = "status_checks"
-    
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
     client_name = Column(String, nullable=False)
     timestamp = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
 
-# Pydantic Models
+# Pydantic Model - Status Check
 class StatusCheckCreate(BaseModel):
     client_name: str
 
@@ -56,16 +71,12 @@ class StatusCheckResponse(BaseModel):
     id: str
     client_name: str
     timestamp: datetime
-    
     class Config:
         from_attributes = True
 
-# File: neon_backend_fixed.py (Tambahkan setelah class StatusCheckDB)
-
-# --- Database Model untuk Pesan Kontak ---
+# Database Model - Contact Message
 class ContactMessageDB(Base):
     __tablename__ = "contacts"
-    
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
     name = Column(String, nullable=False)
     email = Column(String, nullable=False)
@@ -73,7 +84,7 @@ class ContactMessageDB(Base):
     message = Column(String, nullable=False)
     timestamp = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
 
-# --- Pydantic Models untuk Validasi Input ---
+# Pydantic Model - Contact Message
 class ContactMessageCreate(BaseModel):
     name: str
     email: str
@@ -87,25 +98,28 @@ class ContactMessageResponse(BaseModel):
     subject: str | None
     message: str
     timestamp: datetime
-    
     class Config:
         from_attributes = True
 
-# Test database connection
+# ----------------------------------------------------------------------
+# 🛠️ 4. Fungsi Database Helper
+# ----------------------------------------------------------------------
+
 async def test_connection():
     try:
         async with engine.connect() as conn:
-            result = await conn.execute(text("SELECT 1"))
+            # Gunakan query yang sangat ringan
+            await conn.execute(text("SELECT 1"))
             print("✅ Database connection test: PASSED")
             return True
     except Exception as e:
         print(f"❌ Database connection test: FAILED - {e}")
         return False
 
-# Create tables
 async def create_tables():
     try:
         async with engine.begin() as conn:
+            # Buat tabel jika belum ada (idempotent)
             await conn.run_sync(Base.metadata.create_all)
         print("✅ Tables created successfully")
         return True
@@ -113,42 +127,45 @@ async def create_tables():
         print(f"❌ Table creation failed: {e}")
         return False
 
-# FastAPI App
+# ----------------------------------------------------------------------
+# 🚀 5. Konfigurasi FastAPI dan Event
+# ----------------------------------------------------------------------
+
 app = FastAPI(
     title="Portfolio Backend",
     description="Powered by Neon PostgreSQL",
     version="1.0.0"
 )
 
-# Startup event
-@app.on_event("startup")
-async def startup_event():
-    print("🚀 Starting Portfolio Backend...")
-    
-    # Test connection
-    connected = await test_connection()
-    if not connected:
-        print("⚠️ Running without database connection")
-        return
-    
-    # Create tables
-    success = await create_tables()
-    if success:
-        print("✅ Backend ready at http://localhost:5000")
-        print("📚 API Docs: http://localhost:5000/docs")
-    else:
-        print("⚠️ Backend running with database issues")
-
 # CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["*"], # Ganti dengan domain frontend Anda saat deploy
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Router
+@app.on_event("startup")
+async def startup_event():
+    print("🚀 Starting Portfolio Backend...")
+    
+    # Koneksi dan Buat Tabel saat startup
+    connected = await test_connection()
+    if not connected:
+        print("⚠️ Running without database connection (endpoints akan gagal)")
+        return
+    
+    success = await create_tables()
+    if success:
+        print("✅ Backend ready")
+    else:
+        print("⚠️ Backend running with database issues")
+
+# ----------------------------------------------------------------------
+# 🌐 6. Definisi Endpoint (Routes)
+# ----------------------------------------------------------------------
+
 api_router = APIRouter(prefix="/api")
 
 @api_router.get("/", tags=["Health"])
@@ -156,11 +173,14 @@ async def root():
     return {
         "message": "🚀 Portfolio Backend is running!",
         "database": "Neon PostgreSQL",
-        "status": "healthy",
-        "docs": "http://localhost:5000/docs"
+        "status": "healthy"
     }
 
+# Endpoint Status Check dan Contact (sesuai kode Anda)
+# ... [Semua endpoint yang Anda definisikan sebelumnya tetap sama] ...
+
 @api_router.post("/status", response_model=StatusCheckResponse, tags=["Status"])
+# (Kode fungsi create_status_check...)
 async def create_status_check(item: StatusCheckCreate):
     try:
         async with AsyncSessionLocal() as session:
@@ -171,26 +191,25 @@ async def create_status_check(item: StatusCheckCreate):
             session.add(db_item)
             await session.commit()
             await session.refresh(db_item)
-            
-            print(f"📝 Created status check: {db_item.client_name}")
             return StatusCheckResponse.from_orm(db_item)
     except Exception as e:
         print(f"❌ Error creating status: {e}")
         raise HTTPException(status_code=500, detail="Database error")
 
 @api_router.get("/status", response_model=List[StatusCheckResponse], tags=["Status"])
+# (Kode fungsi get_status_checks...)
 async def get_status_checks():
     try:
         async with AsyncSessionLocal() as session:
             result = await session.execute(select(StatusCheckDB))
             items = result.scalars().all()
-            print(f"📊 Retrieved {len(items)} status checks")
             return [StatusCheckResponse.from_orm(item) for item in items]
     except Exception as e:
         print(f"❌ Error getting status: {e}")
         return []
 
 @api_router.delete("/status/{item_id}", tags=["Status"])
+# (Kode fungsi delete_status_check...)
 async def delete_status_check(item_id: str):
     try:
         async with AsyncSessionLocal() as session:
@@ -198,20 +217,17 @@ async def delete_status_check(item_id: str):
                 select(StatusCheckDB).where(StatusCheckDB.id == item_id)
             )
             item = result.scalar_one_or_none()
-            
             if not item:
                 raise HTTPException(status_code=404, detail="Item not found")
-            
             await session.delete(item)
             await session.commit()
-            
-            print(f"🗑️ Deleted status check: {item_id}")
             return {"message": "Item deleted", "id": item_id}
     except Exception as e:
         print(f"❌ Error deleting status: {e}")
         raise HTTPException(status_code=500, detail="Database error")
     
 @api_router.post("/contact", response_model=ContactMessageResponse, tags=["Contact"])
+# (Kode fungsi receive_contact_message...)
 async def receive_contact_message(item: ContactMessageCreate):
     try:
         async with AsyncSessionLocal() as session:
@@ -225,17 +241,25 @@ async def receive_contact_message(item: ContactMessageCreate):
             session.add(db_item)
             await session.commit()
             await session.refresh(db_item)
-            
-            print(f"📧 New contact message received from: {db_item.email}")
             return ContactMessageResponse.from_orm(db_item)
     except Exception as e:
         print(f"❌ Error saving contact message: {e}")
         raise HTTPException(status_code=500, detail="Database error or missing fields")
 
+
 # Include router
 app.include_router(api_router)
 
-# Run server
+# ----------------------------------------------------------------------
+# 🖥️ 7. Main block (Hanya untuk menjalankan secara lokal)
+# ----------------------------------------------------------------------
+
 if __name__ == "__main__":
+    # Load environment HANYA jika dijalankan secara lokal (untuk uvicorn)
+    from dotenv import load_dotenv
+    ROOT_DIR = Path(__file__).parent
+    load_dotenv(ROOT_DIR / '.env')
+    
+    # Jalankan Uvicorn
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=5000, log_level="info")
