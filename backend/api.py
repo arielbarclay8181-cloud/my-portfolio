@@ -235,7 +235,7 @@ async def receive_contact_message(item: ContactMessageCreate):
 # Include router
 app.include_router(api_router)
 
-# Run server
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=5000, log_level="info")
+# # Run server
+# if __name__ == "__main__":
+#     import uvicorn
+#     uvicorn.run(app, host="0.0.0.0", port=5000, log_level="info")
