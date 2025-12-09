@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import Header from './components/Header';
 import Hero from './components/Hero';
@@ -14,6 +14,12 @@ import { portfolioData } from './mock';
 import './App.css';
 
 function App() {
+
+  useEffect(() => {
+    const nickname = portfolioData.personal.nickname;
+    document.title = `${nickname} Portfolio`;
+  }, []);
+
   return (
     <BrowserRouter>
       <div className="App bg-black min-h-screen">

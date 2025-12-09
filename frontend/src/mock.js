@@ -3,7 +3,7 @@
 export const portfolioData = {
   personal: {
     name: "Ariel Barclay Christian",
-    nickname: "CLAY", 
+    nickname: "Clay", 
     age: "19", 
     born: "Sanggau, 7 September 2006",
     title: "Multimedia & Computer Science",
