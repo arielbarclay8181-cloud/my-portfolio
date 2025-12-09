@@ -30,7 +30,7 @@ const Contact = ({ data }) => {
     
     try {
       const response = await axios.post(
-        'http://localhost:5000/api/contact', 
+        'https://web-production-9bc1e.up.railway.app/api/contact',
         formData
       );
       
