@@ -186,7 +186,7 @@ const Projects = ({ data }) => {
         </div>
       </div>
       
-      {/* IMAGE MODAL (Diambil dari Projects.tsx) */}
+      {/* IMAGE MODAL */}
       <AnimatePresence>
         {selectedImage && (
           <motion.div

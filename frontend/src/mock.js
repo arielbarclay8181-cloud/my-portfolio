@@ -1,5 +1,3 @@
-// Mock data for Computer Science Student Portfolio
-
 export const portfolioData = {
   personal: {
     name: "Ariel Barclay Christian",
@@ -81,7 +79,7 @@ export const portfolioData = {
       tags: ["react", "Typescript", "Node.js", "Supabase"],
       github: "https://github.com/arielbarclay8181-cloud/web-kelas-2ia13",
       demo: "https://web-kelas-2ia13.vercel.app/",
-      color: "cyan"
+      color: "pink"
     },
     {
       id: 2,
@@ -92,13 +90,13 @@ export const portfolioData = {
       tags: ["react", "Typescript", "Node.js", "Supabase"],
       github: "https://github.com/arielbarclay8181-cloud/aplikasi-rumah-sakit-sederhana.git",
       demo: "https://aplikasi-rumah-sakit-sederhana.vercel.app/",
-      color: "purple"
+      color: "green"
     },
     {
       id: 3,
-      title: "design Social media",
-      description: "Test Bro",
-      image: "/design1.png", 
+      title: "Design Social media",
+      description: "Social media post design",
+      image: "/3.jpeg", 
       type: "design",
       tags: ["Photoshop"],
       color: "cyan"
@@ -112,7 +110,90 @@ export const portfolioData = {
       type: "video",
       tags: ["Adobe Premiere"],
       color: "purple"
-    }
+    },
+        {
+      id: 5,
+      title: "My Portfolio",
+      description: "Portfolio pribadi tentang saya",
+      image: "/clay.png",
+      type: "apps",
+      tags: ["react", "Typescript", "Node.js", "FastAPI" , "neonDB" , "Python"],
+      github: "https://github.com/arielbarclay8181-cloud/my-portfolio.git",
+      demo: "https://my-portfolio-three-nu-pm0vhn1ye6.vercel.app/",
+      color: "cyan"
+    },
+    {
+      id: 6,
+      title: "Design recruitment",
+      description: "Design recruitment",
+      image: "/1.jpeg", 
+      type: "design",
+      tags: ["Photoshop"],
+      color: "purple"
+    },
+    {
+      id: 7,
+      title: "Design Social media",
+      description: "Social media post design",
+      image: "/2.jpeg", 
+      type: "design",
+      tags: ["Photoshop"],
+      color: "cyan"
+    },
+    {
+      id: 8,
+      title: "Design Big Day",
+      description: "Design Eid Al-Fitr",
+      image: "/4.jpeg", 
+      type: "design",
+      tags: ["Photoshop"],
+      color: "purple"
+    },
+    {      
+    id: 9,
+      title: "Design Commemorative Day",
+      description: "International Day for the Preservation of the Ozone Layer",
+      image: "/5.jpeg", 
+      type: "design",
+      tags: ["Photoshop"],
+      color: "cyan"
+    },
+    {
+      id: 10,
+      title: "Design Social media",
+      description: "Social media post design",
+      image: "/6.jpeg", 
+      type: "design",
+      tags: ["Photoshop"],
+      color: "purple"
+    },
+    {      
+    id: 11,
+      title: "Design Social media",
+      description: "Social media post design",
+      image: "/7.jpeg", 
+      type: "design",
+      tags: ["Photoshop"],
+      color: "cyan"
+    },
+    {
+      id: 12,
+      title: "Design Social media",
+      description: "Social media post design",
+      image: "/8.jpeg", 
+      type: "design",
+      tags: ["Photoshop"],
+      color: "purple"
+    },
+    {
+      id: 13,
+      title: "Design Benner",
+      description: "Benner Design Food",
+      image: "/9.jpg", 
+      type: "design",
+      tags: ["Photoshop"],
+      color: "cyan"
+    },
   ],
 
   experience: [

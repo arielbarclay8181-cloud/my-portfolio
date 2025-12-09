@@ -29,8 +29,8 @@ const Certificate = ({ data }) => {
                 <Award className="w-6 h-6 text-cyan-400" />
               </div>
               
-              {/* Content */}
-              <div className="space-y-1 flex-1"> {/* Tambahkan flex-1 agar konten mengambil ruang tengah */}
+              {/* Content*/}
+              <div className="space-y-1 flex-1 min-w-0"> 
                 <h3 className="text-xl font-bold text-white group-hover:text-cyan-400 transition-colors duration-300">
                   {item.title}
                 </h3>
@@ -41,7 +41,7 @@ const Certificate = ({ data }) => {
 
               {/* Action and Year Badge Container */}
               <div className="flex flex-col items-end space-y-2 flex-shrink-0">
-                  {/* Tombol View Certificate BARU */}
+                  {/* View Certificate */}
                   {item.link && (
                       <a href={item.link} target="_blank" rel="noopener noreferrer">
                           <Button 

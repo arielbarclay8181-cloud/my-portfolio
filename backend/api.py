@@ -16,7 +16,6 @@ from sqlalchemy import Column, String, DateTime, select, text
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
-# Neon Database URL (TANPA ?sslmode=require di akhir)
 DATABASE_URL = os.environ.get("DATABASE_URL")
 if not DATABASE_URL:
     DATABASE_URL = "postgresql://neondb_owner:npg_FtTON3g6EHiy@ep-lucky-dew-a40oe7qr-pooler.us-east-1.aws.neon.tech/neondb"
@@ -28,19 +27,18 @@ ASYNC_DB_URL = DATABASE_URL.replace("postgresql://", "postgresql+asyncpg://")
 
 print(f"🔗 Async URL: {ASYNC_DB_URL[:60]}...")
 
-# SQLAlchemy setup dengan SSL untuk Neon
 engine = create_async_engine(
     ASYNC_DB_URL, 
     echo=True,
     connect_args={
-        "ssl": "require"  # Ini penting untuk Neon!
+        "ssl": "require"  
     }
 )
 
 AsyncSessionLocal = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 Base = declarative_base()
 
-# Database Model
+
 class StatusCheckDB(Base):
     __tablename__ = "status_checks"
     
@@ -48,7 +46,7 @@ class StatusCheckDB(Base):
     client_name = Column(String, nullable=False)
     timestamp = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
 
-# Pydantic Models
+
 class StatusCheckCreate(BaseModel):
     client_name: str
 
@@ -60,9 +58,6 @@ class StatusCheckResponse(BaseModel):
     class Config:
         from_attributes = True
 
-# File: neon_backend_fixed.py (Tambahkan setelah class StatusCheckDB)
-
-# --- Database Model untuk Pesan Kontak ---
 class ContactMessageDB(Base):
     __tablename__ = "contacts"
     
@@ -73,7 +68,6 @@ class ContactMessageDB(Base):
     message = Column(String, nullable=False)
     timestamp = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
 
-# --- Pydantic Models untuk Validasi Input ---
 class ContactMessageCreate(BaseModel):
     name: str
     email: str
