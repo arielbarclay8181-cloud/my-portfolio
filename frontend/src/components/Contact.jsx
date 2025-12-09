@@ -30,7 +30,7 @@ const Contact = ({ data }) => {
     
     try {
       const response = await axios.post(
-        '/api/contact', 
+        'http://localhost:5000/api/contact', 
         formData
       );
       
