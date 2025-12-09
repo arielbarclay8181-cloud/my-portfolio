@@ -125,20 +125,21 @@ app = FastAPI(
 async def startup_event():
     print("🚀 Starting Portfolio Backend...")
     
-    # Test connection
-    connected = await test_connection()
-    if not connected:
-        print("⚠️ Running without database connection")
-        return
+    # # Test connection
+    # connected = await test_connection()
+    # if not connected:
+    #     print("⚠️ Running without database connection")
+    #     return
     
-    # Create tables
-    success = await create_tables()
-    if success:
-        print("✅ Backend ready at http://localhost:5000")
-        print("📚 API Docs: http://localhost:5000/docs")
-    else:
-        print("⚠️ Backend running with database issues")
-
+    # # Create tables
+    # success = await create_tables()
+    # if success:
+    #     print("✅ Backend ready at http://localhost:5000")
+    #     print("📚 API Docs: http://localhost:5000/docs")
+    # else:
+    #     print("⚠️ Backend running with database issues")
+    print("✅ Backend ready! (DB connection skipped for Vercel debugging)")
+    
 # CORS
 app.add_middleware(
     CORSMiddleware,
