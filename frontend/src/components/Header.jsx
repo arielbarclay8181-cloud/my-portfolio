@@ -100,7 +100,7 @@ const Header = () => {
                 onClick={() => scrollToSection('contact')}
                 className="bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600 text-white font-semibold py-3 rounded-full mt-2"
               >
-                Hire Me
+                Contact Me
               </Button>
             </div>
           </div>
