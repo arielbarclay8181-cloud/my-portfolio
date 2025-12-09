@@ -90,8 +90,8 @@ export const portfolioData = {
       image: "/rslogo.png",
       type: "apps", 
       tags: ["react", "Typescript", "Node.js", "Supabase"],
-      github: "#",
-      demo: "#",
+      github: "https://github.com/arielbarclay8181-cloud/aplikasi-rumah-sakit-sederhana.git",
+      demo: "https://aplikasi-rumah-sakit-sederhana.vercel.app/",
       color: "purple"
     },
     {
