@@ -194,6 +194,17 @@ export const portfolioData = {
       tags: ["Photoshop"],
       color: "cyan"
     },
+    {
+      id: 14,
+      title: "Web Panti Jompo Sahabat Harapan Senja 2",
+      description: "Web untuk informasi panti jompo sahabat harapan senja 2",
+      image: "/logo2.png",
+      type: "apps",
+      tags: ["react", "Typescript", "Node.js"],
+      github: "https://github.com/arielbarclay8181-cloud/web-shs2.git",
+      demo: "https://www.sahabatharapansenja2.com/",
+      color: "pink"
+    }
   ],
 
   experience: [
