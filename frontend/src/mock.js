@@ -204,6 +204,17 @@ export const portfolioData = {
       github: "https://github.com/arielbarclay8181-cloud/web-shs2.git",
       demo: "https://www.sahabatharapansenja2.com/",
       color: "pink"
+    },
+    {
+      id: 15,
+      title: "Web Goa maria Desa Putera",
+      description: "Web untuk informasi Goa maria Desa Putera",
+      image: "/headlogo.png",
+      type: "apps",
+      tags: ["react", "Typescript", "Node.js"],
+      github: "https://github.com/arielbarclay8181-cloud/web-goa-maria-dp",
+      demo: "https://web-goa-maria-dp.vercel.app/",
+      color: "green"
     }
   ],
 
